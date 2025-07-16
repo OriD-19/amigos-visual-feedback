@@ -1,9 +1,9 @@
 import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
