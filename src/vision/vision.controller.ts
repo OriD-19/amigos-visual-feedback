@@ -1,20 +1,12 @@
-import {
-  Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Post, Body } from '@nestjs/common';
 import { VisionService } from './vision.service';
 
 @Controller('vision')
-export class VisionController{
-    constructor(private readonly visionService: VisionService){}
+export class VisionController {
+  constructor(private readonly visionService: VisionService) {}
 
-    @Post('analyze')
-    @UseInterceptors(FileInterceptor('image'))
-    async analyze(@UploadedFile() file: Express.Multer.File)
-    {
-        return this.visionService.uploadImageAndAnalyze(file);
-    }
+  @Post('analyze')
+  async analyze(@Body() body: { imageUrl: string }) {
+    return this.visionService.analyzeImageFromUrl(body.imageUrl);
+  }
 }
