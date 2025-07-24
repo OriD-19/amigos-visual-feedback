@@ -8,6 +8,10 @@ import { CacheConfigService } from './cache/cache.service';
 import { ProductsModule } from './products/products.module';
 import { StoresModule } from './stores/stores.module';
 import "dotenv/config"
+import { ComentarioModule } from './comentario/comentario.module';
+import { EtiquetaAutomática } from './etiqueta-automática/etiqueta-automática.entity';
+import { EtiquetaAutomáticaModule } from './etiqueta-automática/etiqueta-automática.module';
+import { ChatGptService } from './chatgpt/chatgpt.service';
 
 @Module({
     imports: [
@@ -28,8 +32,10 @@ import "dotenv/config"
         }),
         ProductsModule,
         StoresModule,
+        ComentarioModule,
+        EtiquetaAutomáticaModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, ChatGptService],
 })
 export class AppModule { }

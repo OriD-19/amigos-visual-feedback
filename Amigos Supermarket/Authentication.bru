@@ -1,0 +1,18 @@
+meta {
+  name: Authentication
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/users
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "fernando@fernando.com",
+    "password": "safepass123"
+  }
+}

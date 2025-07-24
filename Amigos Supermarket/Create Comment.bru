@@ -1,0 +1,17 @@
+meta {
+  name: Create Comment
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/comentarios
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "comentario": "Este plátano resultó podrido. Obviamente, no me voy a comer algo así!"
+  }
+}
