@@ -1,0 +1,17 @@
+meta {
+  name: Vision feedback
+  type: http
+  seq: 6
+}
+
+post {
+  url: http://localhost:3000/vision/analyze
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "imageUrl": "https://storage.googleapis.com/feedback-images-supermercado/1753404389177-banana-podrida-con-manchas-negras-271419543.webp"
+  }
+}

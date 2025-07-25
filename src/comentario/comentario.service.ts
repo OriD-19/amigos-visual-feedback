@@ -4,6 +4,10 @@ import { Repository } from 'typeorm';
 import { Comentario } from './comentario.entity';
 import { ChatGptService } from 'src/chatgpt/chatgpt.service';
 import { EtiquetaAutomáticaService } from 'src/etiqueta-automática/etiqueta-automática.service';
+import { Image } from './image.entity';
+import { Feedback } from './feedback.entity';
+import { Storage } from '@google-cloud/storage';
+import * as path from 'path';
 
 @Injectable()
 export class ComentarioService {
@@ -15,23 +19,49 @@ export class ComentarioService {
 
     private readonly etiquetaService: EtiquetaAutomáticaService,
   ) {}
-  async createComentario(comentario: string) {
-    const etiquetaChatgpt =
-      await this.chatgptservice.generarEtiqueta(comentario);
-    const etiquetaBase =
-      await this.etiquetaService.encontrarEtiqueta(etiquetaChatgpt);
-    const sentimiento =
-      await this.chatgptservice.generarSemaforoEmociones(comentario);
+  async createComentario(comentario: string, productStoreId: number, file?: Express.Multer.File) {
+    let imageEntity: Image | undefined = undefined;
+    if (file) {
+      const storage = new Storage({
+        keyFilename: process.env.GCP_CREDENTIALS_PATH || path.join(__dirname, '../../keys/gcp-credentials.json'),
+        projectId: process.env.GCP_PROJECT_ID,
+      });
+      const bucketName = process.env.GCP_BUCKET_NAME;
+      if (!bucketName) {
+        throw new Error('GCP_BUCKET_NAME environment variable is not set');
+      }
+      const bucket = storage.bucket(bucketName);
+      const blob = bucket.file(Date.now() + '-' + file.originalname);
+      const blobStream = blob.createWriteStream({ resumable: false });
+      await new Promise((resolve, reject) => {
+        blobStream.on('finish', resolve);
+        blobStream.on('error', reject);
+        blobStream.end(file.buffer);
+      });
+      const imageUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+      imageEntity = this.comentarioRepository.manager.create(Image, { url: imageUrl });
+      await this.comentarioRepository.manager.save(Image, imageEntity);
+    }
+    const etiquetaChatgpt = await this.chatgptservice.generarEtiqueta(comentario);
+    const etiquetaBase = await this.etiquetaService.encontrarEtiqueta(etiquetaChatgpt);
+    const sentimiento = await this.chatgptservice.generarSemaforoEmociones(comentario);
 
+    const productStoreRef = { id: productStoreId } as any;
     const nuevoComentario = this.comentarioRepository.create({
       textoComentario: comentario,
       sentimientoComentario: sentimiento,
       etiquetaAutomatica: { id: etiquetaBase.id },
+      productStore: productStoreRef,
     });
+    const comentarioBase = await this.comentarioRepository.save(nuevoComentario);
 
-    const comentarioBase =
-      await this.comentarioRepository.save(nuevoComentario);
-    return comentarioBase;
+    // Create Feedback entity linking image and comment
+    const feedback = this.comentarioRepository.manager.create(Feedback, {
+      imageId: imageEntity ? imageEntity.id : undefined,
+      comentarioId: comentarioBase.id,
+    });
+    await this.comentarioRepository.manager.save(Feedback, feedback);
+    return feedback;
   }
   async getComentarios(): Promise<Comentario[]> {
     return this.comentarioRepository.find();

@@ -1,15 +1,23 @@
-import { Controller, Post, Body, Get, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ComentarioService } from './comentario.service';
 import { Comentario } from './comentario.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+class CreateComentarioDto {
+  comentario: string;
+  productStoreId: number;
+}
 
 @Controller('comentarios')
 export class ComentarioController {
   constructor(private readonly comentarioService: ComentarioService) {}
   @Post()
+  @UseInterceptors(FileInterceptor('image'))
   async createComentario(
-    @Body('comentario') comentario: string,
-  ): Promise<Comentario> {
-    return this.comentarioService.createComentario(comentario);
+    @Body() body: CreateComentarioDto,
+    @UploadedFile() file?: Express.Multer.File
+  ) {
+    return this.comentarioService.createComentario(body.comentario, body.productStoreId, file);
   }
   @Get()
   async getComentarios(): Promise<Comentario[]> {

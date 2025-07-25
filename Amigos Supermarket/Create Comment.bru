@@ -6,7 +6,7 @@ meta {
 
 post {
   url: http://localhost:3000/comentarios
-  body: json
+  body: multipartForm
   auth: inherit
 }
 
@@ -14,4 +14,10 @@ body:json {
   {
     "comment": "It was a great purchase!"
   }
+}
+
+body:multipart-form {
+  productStoreId: 3
+  comentario: This banana was amazing! Congratulations on serving such a great prouct!
+  image: @file(C:\Users\USER\Pictures\amigos-feedback\Bananas.jpg.webp)
 }

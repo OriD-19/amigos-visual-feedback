@@ -1,5 +1,6 @@
 import { EtiquetaAutomática } from 'src/etiqueta-automática/etiqueta-automática.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductStore } from 'src/products/products.entity/product-store.entity';
 
 @Entity()
 export class Comentario {
@@ -19,4 +20,7 @@ export class Comentario {
     eager: true,
   })
   etiquetaAutomatica: EtiquetaAutomática;
+
+  @ManyToOne(() => ProductStore, { eager: true })
+  productStore: ProductStore;
 }
