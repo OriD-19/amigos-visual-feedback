@@ -22,7 +22,7 @@ export class ProductsService {
 
     async findAll(): Promise<Product[]> {
         return await this.productRepository.find({
-            relations: ['productStores', ' productStores.store'],
+            relations: ['productStores'], 
         });
     }
 
