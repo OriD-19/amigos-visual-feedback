@@ -15,17 +15,17 @@ export class ModerationHistoryController {
   constructor(private readonly moderationService: ModerationHistoryService) {}
 
   @Post(':feedbackId')
-  @Roles('auditor')
+  @Roles('manager', 'admin')
   @ApiOperation({ 
     summary: 'Moderate a feedback (approve, reject, or answer)',
     description: `
-    Allows auditors to moderate customer feedback by performing one of three actions:
+    Allows managers and admins to moderate customer feedback by performing one of three actions:
     
     - **approved**: Approve the feedback for public display
     - **rejected**: Reject the feedback (requires reason)
     - **answered**: Provide a response to the customer (requires response message)
     
-    **Required Permissions**: Only users with 'auditor' role can access this endpoint.
+    **Required Permissions**: Only users with 'manager' or 'admin' role can access this endpoint.
     
     **Business Rules**:
     - When action is 'rejected', a reason must be provided
@@ -117,14 +117,7 @@ export class ModerationHistoryController {
   })
   @ApiResponse({ 
     status: 403, 
-    description: 'Forbidden - User does not have auditor role',
-    schema: {
-      example: {
-        statusCode: 403,
-        message: 'Access denied. Auditor role required.',
-        error: 'Forbidden'
-      }
-    }
+    description: 'Forbidden - User does not have manager or admin role'
   })
   @ApiResponse({ 
     status: 404, 
@@ -153,10 +146,10 @@ export class ModerationHistoryController {
   }
 
   @Get()
-  @Roles('auditor')
+  @Roles('manager', 'admin')
   @ApiOperation({ 
     summary: 'Get all moderation history records',
-    description: 'Retrieves all moderation history records. Only accessible by auditors.'
+    description: 'Retrieves all moderation history records. Only accessible by managers and admins.'
   })
   @ApiProduces('application/json')
   @ApiResponse({ 
@@ -194,17 +187,17 @@ export class ModerationHistoryController {
   })
   @ApiResponse({ 
     status: 403, 
-    description: 'Forbidden - User does not have auditor role'
+    description: 'Forbidden - User does not have manager or admin role'
   })
   async getAllModerationHistory() {
     return this.moderationService.getAllModerationHistory();
   }
 
   @Get('feedback/:feedbackId')
-  @Roles('auditor')
+  @Roles('manager', 'admin')
   @ApiOperation({ 
     summary: 'Get moderation history for a specific feedback',
-    description: 'Retrieves all moderation records for a specific feedback ID. Only accessible by auditors.'
+    description: 'Retrieves all moderation records for a specific feedback ID. Only accessible by managers and admins.'
   })
   @ApiParam({ 
     name: 'feedbackId', 
@@ -238,7 +231,7 @@ export class ModerationHistoryController {
   })
   @ApiResponse({ 
     status: 403, 
-    description: 'Forbidden - User does not have auditor role'
+    description: 'Forbidden - User does not have manager or admin role'
   })
   @ApiResponse({ 
     status: 404, 

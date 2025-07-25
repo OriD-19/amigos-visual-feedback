@@ -16,15 +16,22 @@ export class ModerationHistoryService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async createModeration(auditor: User, feedbackId: number, action: 'approved' | 'rejected' | 'answered', reason?: string, response?: string, comments?: string) {
-    if (!auditor || auditor.role !== 'auditor') {
-      throw new ForbiddenException('Only auditors can moderate feedback');
+  async createModeration(auditor: any, feedbackId: number, action: 'approved' | 'rejected' | 'answered', reason?: string, response?: string, comments?: string) {
+    if (!auditor || (auditor.role !== 'manager' && auditor.role !== 'admin')) {
+      throw new ForbiddenException('Only managers and admins can moderate feedback');
     }
     const feedback = await this.feedbackRepo.findOne({ where: { id: feedbackId } });
     if (!feedback) throw new NotFoundException('Feedback not found');
+    
+    // Get the actual user entity for the auditor
+    const auditorUser = await this.userRepo.findOne({ where: { id: auditor.userId || auditor.id } });
+    if (!auditorUser) {
+      throw new NotFoundException('Auditor user not found');
+    }
+    
     const moderation = this.moderationRepo.create({
-      auditor,
-      auditorId: auditor.id,
+      auditor: auditorUser,
+      auditorId: auditorUser.id,
       feedback,
       feedbackId,
       action,

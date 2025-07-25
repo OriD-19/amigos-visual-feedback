@@ -44,20 +44,20 @@ const mockComentarioRepository = {
   manager: mockManager, 
 };
 
-const mockCustomerUser = { id: 10, role: 'cliente' };
-const mockOtherCustomerUser = { id: 20, role: 'cliente' };
-const mockAuditorUser = { id: 30, role: 'auditor' };
-const mockManagerUser = { id: 40, role: 'manager' };
+const mockCustomerUser = { userId: 10, role: 'cliente' };
+const mockOtherCustomerUser = { userId: 20, role: 'cliente' };
+const mockAuditorUser = { userId: 30, role: 'auditor' };
+const mockManagerUser = { userId: 30, role: 'manager' };
 
 const mockComentarioWithUser = {
   ...mockComentario,
-  userId: mockCustomerUser.id,
+  userId: mockCustomerUser.userId,
   user: mockCustomerUser,
 };
 
 const mockComentarioWithOtherUser = {
   ...mockComentario,
-  userId: mockOtherCustomerUser.id,
+  userId: mockOtherCustomerUser.userId,
   user: mockOtherCustomerUser,
 };
 
@@ -107,7 +107,10 @@ describe('ComentarioService', () => {
     mockComentarioRepository.findOne.mockResolvedValueOnce(mockComentarioWithUser);
     const result = await service.getComentarioById(mockCustomerUser, 1);
     expect(result).toEqual(mockComentarioWithUser);
-    expect(comentarioRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+    expect(comentarioRepo.findOne).toHaveBeenCalledWith({ 
+      where: { id: 1 },
+      relations: ['user', 'productStore', 'etiquetaAutomatica'],
+    });
   });
 
   it('should delete a comentario', async () => {
@@ -173,20 +176,21 @@ describe('ComentarioService', () => {
 
   // MANAGER TESTS
   it('should allow manager to view all feedback', async () => {
-    mockComentarioRepository.find.mockResolvedValueOnce([mockComentarioWithUser, mockComentarioWithOtherUser]);
+    mockComentarioRepository.find.mockResolvedValue([mockComentarioWithUser]);
     const result = await service.getComentarios(mockManagerUser);
-    expect(result).toEqual([mockComentarioWithUser, mockComentarioWithOtherUser]);
+    expect(result).toEqual([mockComentarioWithUser]);
   });
 
   it('should allow manager to view any feedback by id', async () => {
-    mockComentarioRepository.findOne.mockResolvedValueOnce(mockComentarioWithOtherUser);
+    mockComentarioRepository.findOne.mockResolvedValue(mockComentarioWithUser);
     const result = await service.getComentarioById(mockManagerUser, 1);
-    expect(result).toEqual(mockComentarioWithOtherUser);
+    expect(result).toEqual(mockComentarioWithUser);
   });
 
-  it('should allow manager to delete any feedback', async () => {
-    mockComentarioRepository.findOne.mockResolvedValueOnce(mockComentarioWithOtherUser);
+  it('should allow manager to delete feedback', async () => {
+    mockComentarioRepository.findOne.mockResolvedValueOnce(mockComentarioWithUser);
     mockComentarioRepository.delete.mockResolvedValueOnce({ affected: 1 });
     await expect(service.deleteComentario(mockManagerUser, 1)).resolves.toBeUndefined();
+    expect(comentarioRepo.delete).toHaveBeenCalledWith(1);
   });
 });

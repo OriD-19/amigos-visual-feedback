@@ -119,36 +119,54 @@ export class ComentarioService {
     return feedback;
   }
   async getComentarios(user: any): Promise<Comentario[]> {
-    if (!user) throw new ForbiddenException('Not authenticated');
-    if (user.role === 'cliente') {
-      // Only see own feedback
-      return this.comentarioRepository.find({ where: { userId: user.userId } });
+    if (!user) {
+      throw new ForbiddenException('Authentication required');
     }
-    // manager and auditor can see all
-    return this.comentarioRepository.find();
+    if (user.role === 'cliente') {
+      return this.comentarioRepository.find({
+        where: { userId: user.userId },
+        relations: ['user', 'productStore', 'etiquetaAutomatica'],
+      });
+    }
+    // manager can see all
+    return this.comentarioRepository.find({
+      relations: ['user', 'productStore', 'etiquetaAutomatica'],
+    });
   }
 
   async getComentarioById(user: any, id: number): Promise<Comentario> {
-    const comentario = await this.comentarioRepository.findOne({ where: { id } });
-    if (!comentario) {
-      throw new NotFoundException('Comentario no encontrado');
+    if (!user) {
+      throw new ForbiddenException('Authentication required');
     }
-    if (user.role === 'cliente' && comentario.userId !== user.id) {
+    const comentario = await this.comentarioRepository.findOne({
+      where: { id },
+      relations: ['user', 'productStore', 'etiquetaAutomatica'],
+    });
+    if (!comentario) {
+      throw new NotFoundException('Comment not found');
+    }
+    if (user.role === 'cliente' && comentario.userId !== user.userId) {
       throw new ForbiddenException('You can only view your own feedback');
     }
-    // manager and auditor can view all
     return comentario;
   }
+
   async deleteComentario(user: any, id: number): Promise<void> {
-    const comentario = await this.comentarioRepository.findOne({ where: { id } });
-    if (!comentario) {
-      throw new NotFoundException('Comentario no encontrado para eliminar');
+    if (!user) {
+      throw new ForbiddenException('Authentication required');
     }
-    if (user.role === 'cliente' && comentario.userId !== user.id) {
-      throw new ForbiddenException('You can only delete your own feedback');
+    const comentario = await this.comentarioRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+    if (!comentario) {
+      throw new NotFoundException('Comment not found');
     }
     if (user.role !== 'manager' && user.role !== 'cliente') {
-      throw new ForbiddenException('You do not have permission to delete feedback');
+      throw new ForbiddenException('You do not have permission to delete comments');
+    }
+    if (user.role === 'cliente' && comentario.userId !== user.userId) {
+      throw new ForbiddenException('You can only delete your own feedback');
     }
     await this.comentarioRepository.delete(id);
   }

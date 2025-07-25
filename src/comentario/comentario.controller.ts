@@ -49,20 +49,21 @@ export class ComentarioController {
   }
 
   @Get()
-  @Roles('cliente', 'manager', 'auditor')
-  @ApiOperation({ summary: 'Get feedback comments (own for cliente, all for manager/auditor)' })
+  @Roles('cliente', 'manager')
+  @ApiOperation({ summary: 'Get feedback comments (own for cliente, all for manager)' })
   @ApiResponse({ status: 200, description: 'List of feedback comments', type: [Comentario] })
-  async getComentarios(@Req() req): Promise<Comentario[]> {
+  async getComentarios(@Req() req) {
     return this.comentarioService.getComentarios(req.user);
   }
 
   @Get(':id')
-  @Roles('cliente', 'manager', 'auditor')
-  @ApiOperation({ summary: 'Get a feedback comment by ID (own for cliente, all for manager/auditor)' })
-  @ApiParam({ name: 'id', example: 1 })
+  @Roles('cliente', 'manager')
+  @ApiOperation({ summary: 'Get a feedback comment by ID (own for cliente, all for manager)' })
+  @ApiParam({ name: 'id', description: 'Comment ID' })
   @ApiResponse({ status: 200, description: 'Feedback comment found', type: Comentario })
-  async getComentarioById(@Req() req, @Param('id') id: number): Promise<Comentario> {
-    return this.comentarioService.getComentarioById(req.user, id);
+  @ApiResponse({ status: 404, description: 'Comment not found' })
+  async getComentarioById(@Req() req, @Param('id') id: number) {
+    return this.comentarioService.getComentarioById(req.user, +id);
   }
 
   @Delete(':id')

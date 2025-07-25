@@ -4,8 +4,19 @@ meta {
   seq: 11
 }
 
-get {
-  url: http://localhost:3000/moderation-history
-  body: none
-  auth: inherit
+post {
+  url: http://localhost:3000/moderation-history/1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF1ZGl0QGV4YW1wbGUuY29tIiwic3ViIjo3LCJ1c2VySWQiOjcsIm5hbWUiOiJBdWRpdCIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzUzNDgwMTgyLCJleHAiOjE3NTM0ODM3ODJ9.fGdRHKakuhwrWvnNLHPfcQarT2Uh0kMJjENL-h2xwpg
+}
+
+body:json {
+  {
+    "action": "rejected",
+    "reason": "Content violates community guidelines"
+  }
 }
