@@ -3,19 +3,35 @@ import { ReportService } from './report.service';
 import * as PdfPrinter from 'pdfmake';
 import { Response } from 'express';
 import { Res } from '@nestjs/common';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 
 export class ReportQueryDto {
+  @ApiPropertyOptional({ example: 1, description: 'Store ID to filter by' })
   store?: number;
+
+  @ApiPropertyOptional({ example: 'banana', description: 'Product type/name to filter by' })
   type?: string;
+
+  @ApiPropertyOptional({ example: '2024-06-01', description: 'Start date (YYYY-MM-DD)' })
   from?: string;
+
+  @ApiPropertyOptional({ example: '2024-06-30', description: 'End date (YYYY-MM-DD)' })
   to?: string;
 }
 
+@ApiTags('reports')
 @Controller('reports')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
   @Get('raw')
+  @ApiOperation({ summary: 'Get a structured JSON report' })
+  @ApiQuery({ name: 'store', required: false, type: Number, description: 'Store ID to filter by', example: 1 })
+  @ApiQuery({ name: 'type', required: false, type: String, description: 'Product type/name to filter by', example: 'banana' })
+  @ApiQuery({ name: 'from', required: false, type: String, description: 'Start date (YYYY-MM-DD)', example: '2024-06-01' })
+  @ApiQuery({ name: 'to', required: false, type: String, description: 'End date (YYYY-MM-DD)', example: '2024-06-30' })
+  @ApiResponse({ status: 200, description: 'Structured report data' })
   async getRawReport(
     @Query('store') storeId?: number,
     @Query('type') productType?: string,
@@ -33,6 +49,12 @@ export class ReportController {
   // - Roboto-MediumItalic.ttf
   // You can download these from the official pdfmake repo or Google Fonts.
   @Get('pdf')
+  @ApiOperation({ summary: 'Get a PDF report' })
+  @ApiQuery({ name: 'store', required: false, type: Number, description: 'Store ID to filter by', example: 1 })
+  @ApiQuery({ name: 'type', required: false, type: String, description: 'Product type/name to filter by', example: 'banana' })
+  @ApiQuery({ name: 'from', required: false, type: String, description: 'Start date (YYYY-MM-DD)', example: '2024-06-01' })
+  @ApiQuery({ name: 'to', required: false, type: String, description: 'End date (YYYY-MM-DD)', example: '2024-06-30' })
+  @ApiResponse({ status: 200, description: 'PDF file' })
   async getPdfReport(
     @Query() query: ReportQueryDto,
     @Res() res: Response,

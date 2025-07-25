@@ -1,6 +1,9 @@
-export class CreateStoreDto {
-    name: string;
+import { ApiProperty } from '@nestjs/swagger';
 
-    direction: string;
-    
+export class CreateStoreDto {
+  @ApiProperty({ example: 'Central Branch', description: 'Store name' })
+  name: string;
+
+  @ApiProperty({ example: '123 Main St', description: 'Store address' })
+  direction: string;
 }
