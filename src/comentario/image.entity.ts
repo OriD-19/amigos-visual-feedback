@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { ImageLabel } from './image-label.entity';
 
 @Entity()
 export class Image {
@@ -7,4 +8,7 @@ export class Image {
 
   @Column()
   url: string;
+
+  @OneToMany(() => ImageLabel, label => label.image)
+  labels: ImageLabel[];
 } 

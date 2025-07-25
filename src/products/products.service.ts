@@ -69,6 +69,17 @@ export class ProductsService {
         });
     }
 
+    async findProductByLabels(labels: string[]): Promise<Product | undefined> {
+        for (const label of labels) {
+            const product = await this.productRepository
+                .createQueryBuilder('product')
+                .where('LOWER(product.name) LIKE :label', { label: `%${label.toLowerCase()}%` })
+                .getOne();
+            if (product) return product;
+        }
+        return undefined;
+    }
+
     //para poder asignar los productos a las sucursales
     async assignToStore(productId: number, createProductStore: CreateProductStoreDto) {
         const productStore = this.productStoreRepository.create({

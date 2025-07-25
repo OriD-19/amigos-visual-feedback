@@ -8,6 +8,10 @@ import { Image } from './image.entity';
 import { Feedback } from './feedback.entity';
 import { Storage } from '@google-cloud/storage';
 import * as path from 'path';
+import { ImageLabel } from './image-label.entity';
+import { VisionService } from 'src/vision/vision.service';
+import { ProductsService } from 'src/products/products.service';
+import { Product } from 'src/products/products.entity/products.entity';
 
 @Injectable()
 export class ComentarioService {
@@ -18,6 +22,8 @@ export class ComentarioService {
     private readonly chatgptservice: ChatGptService,
 
     private readonly etiquetaService: EtiquetaAutomáticaService,
+    private readonly visionService: VisionService,
+    private readonly productsService: ProductsService,
   ) {}
   async createComentario(comentario: string, productStoreId: number, file?: Express.Multer.File) {
     let imageEntity: Image | undefined = undefined;
@@ -61,6 +67,20 @@ export class ComentarioService {
       comentarioId: comentarioBase.id,
     });
     await this.comentarioRepository.manager.save(Feedback, feedback);
+
+    let matchedProduct: Product | undefined = undefined;
+    // Analyze image with Vision API
+    if (imageEntity) {
+      const visionResult = await this.visionService.analyzeImageFromUrl(imageEntity.url);
+      const labels = visionResult.matchedSupermarketKeywords || [];
+      // Store all labels as ImageLabel entries
+      if (labels.length > 0) {
+        const labelEntities = labels.map(label => this.comentarioRepository.manager.create(ImageLabel, { label, image: imageEntity }));
+        await this.comentarioRepository.manager.save(ImageLabel, labelEntities);
+      }
+      matchedProduct = await this.productsService.findProductByLabels(labels);
+    }
+
     return feedback;
   }
   async getComentarios(): Promise<Comentario[]> {
