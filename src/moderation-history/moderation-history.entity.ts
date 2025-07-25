@@ -42,4 +42,12 @@ export class ModerationHistory {
   @ApiPropertyOptional({ example: 'Thank you for your feedback!', description: 'Response to the customer' })
   @Column({ type: 'text', nullable: true })
   response?: string;
+
+  @ApiPropertyOptional({ 
+    example: 'Internal note: Customer complaint about product quality. Escalated to store manager for follow-up.', 
+    description: 'Internal auditor comments for administrative purposes (not visible to customers)',
+    maxLength: 1000
+  })
+  @Column({ type: 'text', nullable: true })
+  comments?: string;
 } 

@@ -61,7 +61,7 @@ export class ComentarioService {
       sentimientoComentario: sentimiento,
       etiquetaAutomatica: { id: etiquetaBase.id },
       productStore: productStoreRef,
-      user: user,
+      user: { id: user.userId },
       userId: user.userId,
     });
     const comentarioBase = await this.comentarioRepository.save(nuevoComentario);
@@ -122,7 +122,7 @@ export class ComentarioService {
     if (!user) throw new ForbiddenException('Not authenticated');
     if (user.role === 'cliente') {
       // Only see own feedback
-      return this.comentarioRepository.find({ where: { userId: user.id } });
+      return this.comentarioRepository.find({ where: { userId: user.userId } });
     }
     // manager and auditor can see all
     return this.comentarioRepository.find();

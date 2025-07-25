@@ -16,7 +16,7 @@ export class ModerationHistoryService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async createModeration(auditor: User, feedbackId: number, action: 'approved' | 'rejected' | 'answered', reason?: string, response?: string) {
+  async createModeration(auditor: User, feedbackId: number, action: 'approved' | 'rejected' | 'answered', reason?: string, response?: string, comments?: string) {
     if (!auditor || auditor.role !== 'auditor') {
       throw new ForbiddenException('Only auditors can moderate feedback');
     }
@@ -30,6 +30,7 @@ export class ModerationHistoryService {
       action,
       reason,
       response,
+      comments,
     });
     return this.moderationRepo.save(moderation);
   }
