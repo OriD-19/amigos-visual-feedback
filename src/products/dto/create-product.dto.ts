@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
+// TODO add validations for the fields
 export class CreateProductDto {
   @ApiProperty({ example: 'Banana', description: 'Name of the product' })
   name: string;

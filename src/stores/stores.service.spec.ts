@@ -7,64 +7,73 @@ import { Repository } from 'typeorm';
 
 describe('StoresService', () => {
   let service: StoresService;
-  let storeRepo: Repository<Store>;
+  let storeRepoMock: Record<string, jest.Mock>;
+  let productStoreRepoMock: Record<string, jest.Mock>;
 
   const mockStore = { id: 1, name: 'Central Branch', direction: '123 Main St' };
   const mockProduct = { id: 1, name: 'Banana', price: 1.99 };
 
-  const mockProductStoreRepository = {
-    find: jest.fn().mockResolvedValue([]),
-  };
-
   beforeEach(async () => {
+    storeRepoMock = {
+      create: jest.fn(),
+      save: jest.fn(),
+      find: jest.fn(),
+      findOne: jest.fn(),
+    };
+
+    productStoreRepoMock = {
+      find: jest.fn(),
+    };
+
+    // Reset mocks before each test
+    Object.values(storeRepoMock).forEach(fn => fn.mockReset && fn.mockReset());
+    Object.values(productStoreRepoMock).forEach(fn => fn.mockReset && fn.mockReset());
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StoresService,
-        { provide: getRepositoryToken(Store), useValue: {
-          create: jest.fn().mockReturnValue(mockStore),
-          save: jest.fn().mockResolvedValue(mockStore),
-          find: jest.fn().mockResolvedValue([mockStore]),
-          findOne: jest.fn().mockResolvedValue(mockStore),
-        }},
-        { provide: getRepositoryToken(ProductStore), useValue: mockProductStoreRepository },
+        { provide: getRepositoryToken(Store), useValue: storeRepoMock },
+        { provide: getRepositoryToken(ProductStore), useValue: productStoreRepoMock },
       ],
     }).compile();
 
     service = module.get<StoresService>(StoresService);
-    storeRepo = module.get(getRepositoryToken(Store));
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
   });
 
   it('should create a store', async () => {
-    const dto = { name: 'Central Branch', direction: '123 Main St' };
-    const result = await service.create(dto as any);
-    expect(storeRepo.create).toHaveBeenCalledWith(dto);
-    expect(storeRepo.save).toHaveBeenCalledWith(mockStore);
-    expect(result).toEqual(mockStore);
+    const dto = { name: 'Sucursal 1' , direction: 'Calle 123', managerId: 1 };
+    const createdStore = { id: 1, name: 'Sucursal 1' };
+
+    storeRepoMock.create.mockReturnValue(dto);
+    storeRepoMock.save.mockResolvedValue(createdStore);
+
+    const result = await service.create(dto);
+    expect(result).toEqual(createdStore);
+    expect(storeRepoMock.create).toHaveBeenCalledWith(dto);
+    expect(storeRepoMock.save).toHaveBeenCalledWith(dto);
   });
 
   it('should get all stores', async () => {
+    storeRepoMock.find.mockResolvedValue([mockStore]);
     const result = await service.findAll();
     expect(result).toEqual([mockStore]);
-    expect(storeRepo.find).toHaveBeenCalled();
+    expect(storeRepoMock.find).toHaveBeenCalledWith({
+      relations: ['productStores', 'productStores.product'],
+    });
   });
 
   it('should get a store by id', async () => {
+    storeRepoMock.findOne.mockResolvedValue(mockStore);
     const result = await service.findOne(1);
     expect(result).toEqual(mockStore);
-    expect(storeRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['productStores', 'productStores.product'] });
+    expect(storeRepoMock.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['productStores', 'productStores.product'] });
   });
 
-  // If getStoreProducts uses a custom query, you may need to mock it accordingly.
-  // Here is a generic test assuming it returns a list of products for a store.
   it('should get products for a store', async () => {
-    // Mock the method if it exists on the service
-    service.getStoreProducts = jest.fn().mockResolvedValue([mockProduct]);
+    const products = [mockProduct];
+    productStoreRepoMock.find.mockResolvedValue(products);
     const result = await service.getStoreProducts(1);
-    expect(result).toEqual([mockProduct]);
-    expect(service.getStoreProducts).toHaveBeenCalledWith(1);
+    expect(result).toEqual(products);
+    expect(productStoreRepoMock.find).toHaveBeenCalledWith({ where: { store_id: 1 }, relations: ['product'] });
   });
 });

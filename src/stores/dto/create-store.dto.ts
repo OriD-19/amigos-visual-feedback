@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateStoreDto {
-  @ApiProperty({ example: 'Central Branch', description: 'Store name' })
-  name: string;
+    @ApiProperty({ description: 'Name of the store' })
+    name: string;
 
-  @ApiProperty({ example: '123 Main St', description: 'Store address' })
-  direction: string;
+    @ApiProperty({ description: 'Direction/address of the store' })
+    direction: string;
+
+    @ApiProperty({ description: 'ID of the User who is the manager of the store', example: 1 })
+    managerId: number;
 }

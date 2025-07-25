@@ -1,19 +1,32 @@
-import {
-  Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsString, IsNotEmpty, IsOptional, IsNumber, MinLength, IsIn } from 'class-validator';
 
-@Controller()
+const VALID_ROLES = ['cliente', 'admin', 'manager'];
+
 export class CreateUserDto {
-  @ApiProperty({ example: 'user@example.com', description: 'User email' })
-  email: string;
+    @IsString()
+    @IsNotEmpty()
+    name: string;
 
-  @ApiProperty({ example: 'John Doe', description: 'User name' })
-  name: string;
+    @IsOptional()
+    @IsString()
+    lastName?: string;
 
-  @ApiProperty({ example: 'password123', description: 'User password' })
-  password: string;
+    @IsEmail()
+    email: string;
+
+    @IsOptional()
+    @IsNumber()
+    dui?: number;
+
+    @IsString()
+    @MinLength(6)
+    password: string;
+
+    @IsString()
+    @IsIn(VALID_ROLES)
+    role: string;
+
+    @IsOptional()
+    @IsNumber()
+    storeId?: number; // Requerido solo para managers
 }
