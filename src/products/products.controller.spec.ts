@@ -33,12 +33,13 @@ describe('ProductsController', () => {
 
   describe('create', () => {
     it('should create a product', async () => {
-      const dto = { name: 'Test', price: 10, storeId: 1, stock: 5 };
+      const dto = { name: 'Test', price: 10, stock: 5, storeId: 1 };
+      const mockReq = { user: { id: 1 } };
       const expected = { id: 1, ...dto };
       mockProductsService.create.mockResolvedValue(expected);
 
-      const result = await controller.create({ user: { id: 1 } }, dto);
-      expect(service.create).toHaveBeenCalledWith(dto);
+      const result = await controller.create(mockReq, dto);
+      expect(service.create).toHaveBeenCalledWith(dto, undefined);
       expect(result).toEqual(expected);
     });
   });

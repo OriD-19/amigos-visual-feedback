@@ -26,10 +26,6 @@ export class ComentarioService {
     private readonly productsService: ProductsService,
   ) {}
   async createComentario(user: any, comentario: string, productStoreId: number, file?: Express.Multer.File) {
-    console.log("user: (IF THIS DOES NOT WORK, IMMMA KMS)", user.userId);
-    console.log("comentario: (IF THIS DOES NOT WORK, IMMMA KMS)", comentario);
-    console.log("productStoreId: (IF THIS DOES NOT WORK, IMMMA KMS)", productStoreId);
-    console.log("file: (IF THIS DOES NOT WORK, IMMMA KMS)", file);
     if (!user || user.role !== 'cliente') {
       throw new ForbiddenException('Only customers can submit feedback');
     }
@@ -65,7 +61,7 @@ export class ComentarioService {
       sentimientoComentario: sentimiento,
       etiquetaAutomatica: { id: etiquetaBase.id },
       productStore: productStoreRef,
-      user: { id: user.userId },
+      user: user,
       userId: user.userId,
     });
     const comentarioBase = await this.comentarioRepository.save(nuevoComentario);

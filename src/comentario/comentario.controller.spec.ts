@@ -39,19 +39,20 @@ describe('ComentarioController - Integration Tests', () => {
   describe('POST /comentarios - HTTP Integration', () => {
     it('should create comentario and return HTTP 201 with feedback object', async () => {
       // Arrange
-      const createDto = { comentario: 'Great product', productStoreId: 1 };
+      const comentario = 'Great product';
+      const productStoreId = 1;
       const expectedFeedback = { id: 1, comentarioId: 1 };
       
       mockComentarioService.createComentario.mockResolvedValue(expectedFeedback);
 
       // Act
-      const result = await controller.createComentario(mockRequest, createDto);
+      const result = await controller.createComentario(mockRequest, comentario, productStoreId);
 
       // Assert
       expect(service.createComentario).toHaveBeenCalledWith(
         mockUser, 
-        createDto.comentario, 
-        createDto.productStoreId,
+        comentario, 
+        productStoreId,
         undefined
       );
       expect(result).toEqual(expectedFeedback);
@@ -59,13 +60,14 @@ describe('ComentarioController - Integration Tests', () => {
 
     it('should handle service authorization errors as HTTP exceptions', async () => {
       // Arrange
-      const createDto = { comentario: 'Test', productStoreId: 1 };
+      const comentario = 'Test';
+      const productStoreId = 1;
       mockComentarioService.createComentario.mockRejectedValue(
         new Error('Only customers can create feedback')
       );
 
       // Act & Assert
-      await expect(controller.createComentario(mockRequest, createDto))
+      await expect(controller.createComentario(mockRequest, comentario, productStoreId))
         .rejects.toThrow();
     });
   });
@@ -102,25 +104,25 @@ describe('ComentarioController - Integration Tests', () => {
   describe('GET /comentarios/:id - HTTP Integration', () => {
     it('should return HTTP 200 with specific comentario', async () => {
       // Arrange
-      const comentarioId = '1';
+      const comentarioId = 1;
       const expectedComentario = { id: 1, textoComentario: 'Test' };
       mockComentarioService.getComentarioById.mockResolvedValue(expectedComentario);
 
       // Act
-      const result = await controller.getComentarioById(mockRequest, Number(comentarioId));
+      const result = await controller.getComentarioById(mockRequest, comentarioId);
 
       // Assert
       expect(service.getComentarioById).toHaveBeenCalledWith(mockUser, 1);
       expect(result).toEqual(expectedComentario);
     });
 
-    it('should handle string to number conversion for ID parameter', async () => {
+    it('should handle number ID parameter correctly', async () => {
       // Arrange
-      const comentarioId = '123';
+      const comentarioId = 123;
       mockComentarioService.getComentarioById.mockResolvedValue({ id: 123 });
 
       // Act
-      await controller.getComentarioById(mockRequest, Number(comentarioId));
+      await controller.getComentarioById(mockRequest, comentarioId);
 
       // Assert
       expect(service.getComentarioById).toHaveBeenCalledWith(mockUser, 123);
@@ -133,7 +135,7 @@ describe('ComentarioController - Integration Tests', () => {
       );
 
       // Act & Assert
-      await expect(controller.getComentarioById(mockRequest, Number('1')))
+      await expect(controller.getComentarioById(mockRequest, 1))
         .rejects.toThrow('Access denied');
     });
   });
@@ -141,11 +143,11 @@ describe('ComentarioController - Integration Tests', () => {
   describe('DELETE /comentarios/:id - HTTP Integration', () => {
     it('should return HTTP 204 (no content) on successful deletion', async () => {
       // Arrange
-      const comentarioId = '1';
+      const comentarioId = 1;
       mockComentarioService.deleteComentario.mockResolvedValue(undefined);
 
       // Act
-      const result = await controller.deleteComentario(mockRequest, Number(comentarioId));
+      const result = await controller.deleteComentario(mockRequest, comentarioId);
 
       // Assert
       expect(service.deleteComentario).toHaveBeenCalledWith(mockUser, 1);
@@ -159,7 +161,7 @@ describe('ComentarioController - Integration Tests', () => {
       );
 
       // Act & Assert
-      await expect(controller.deleteComentario(mockRequest, Number('1')))
+      await expect(controller.deleteComentario(mockRequest, 1))
         .rejects.toThrow('Cannot delete others feedback');
     });
   });
@@ -192,32 +194,31 @@ describe('ComentarioController - Integration Tests', () => {
     });
   });
 
-  describe('Parameter Transformation', () => {
-    it('should convert string parameters to numbers correctly', async () => {
+  describe('Parameter Handling', () => {
+    it('should handle number parameters correctly', async () => {
       // Arrange
-      const stringId = '456';
-      const expectedNumericId = 456;
+      const numericId = 456;
       mockComentarioService.getComentarioById.mockResolvedValue({});
 
       // Act
-      await controller.getComentarioById(mockRequest, Number(stringId));
+      await controller.getComentarioById(mockRequest, numericId);
 
       // Assert
       expect(service.getComentarioById).toHaveBeenCalledWith(
         mockUser, 
-        expectedNumericId
+        numericId
       );
     });
 
     it('should handle invalid ID formats', async () => {
       // Arrange
-      const invalidId = 'not-a-number';
+      const invalidId = NaN;
       mockComentarioService.getComentarioById.mockImplementation((user, id) => {
         if (isNaN(id)) throw new NotFoundException('Comentario no encontrado');
         return {};
       });
       // Act & Assert
-      await expect(controller.getComentarioById(mockRequest, Number(invalidId)))
+      await expect(controller.getComentarioById(mockRequest, invalidId))
         .rejects.toThrow(NotFoundException);
     });
   });
@@ -229,7 +230,7 @@ describe('ComentarioController - Integration Tests', () => {
       mockComentarioService.createComentario.mockRejectedValue(serviceError);
 
       // Act & Assert
-      await expect(controller.createComentario(mockRequest, { comentario: 'test', productStoreId: 1 }))
+      await expect(controller.createComentario(mockRequest, 'test', 1))
         .rejects.toThrow('Service specific error');
     });
   });

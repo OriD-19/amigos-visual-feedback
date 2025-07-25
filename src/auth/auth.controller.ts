@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 class LoginDto {
@@ -31,7 +31,6 @@ export class AuthController {
         // hash the password before saving to the database
         createUserDto.password = await bcrypt.hash(createUserDto.password, 12);
         createUserDto.role = 'cliente';
-        console.log("createUserDto: (IF THIS DOES NOT WORK, IMMMA KMS)", createUserDto);
         return this.usersService.registerClient(createUserDto);
     }
 

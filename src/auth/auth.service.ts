@@ -12,28 +12,22 @@ export class AuthService {
     async validateUser(email: string, password: string): Promise<any> {
 
         const user = await this.userService.findOneByEmail(email);
-        console.log("user: (IF THIS DOES NOT WORK, IMMMA KMS)", user);
 
         if (!user) {
-            console.log("User not found");
             return null;
         }
 
         const validationResult = await bcrypt.compare(password, user.password);
         if (!validationResult) {
-            console.log("Password not matched");
             return null;
         }
 
         // Remove password from the user object before returning
-        console.log("User found and password matched");
         const { password: _, ...safeUser } = user;
-        console.log('User for login:', safeUser); // LOG
         return safeUser; 
     }
 
     async login(user: any) {
-        console.log("user: ", user);
         const payload = {
             email: user.email,
             sub: user.id,
@@ -41,7 +35,6 @@ export class AuthService {
             name: user.name,
             role: user.role, 
         };
-        console.log('Payload JWT:', payload); 
         return {
             access_token: this.jwtService.sign(payload),
             user,

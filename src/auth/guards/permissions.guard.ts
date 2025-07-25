@@ -23,7 +23,6 @@ export class PermissionsGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    console.log('req.user en PermissionsGuard:', user); // LOG
     if (!user || !user.role) {
       throw new ForbiddenException('User not authenticated or role not defined');
     }

@@ -41,16 +41,17 @@ describe('StoresService', () => {
   });
 
   it('should create a store', async () => {
-    const dto = { name: 'Sucursal 1' , direction: 'Calle 123', managerId: 1 };
-    const createdStore = { id: 1, name: 'Sucursal 1' };
+    const dto = { name: 'Sucursal 1' , direction: 'Calle 123' };
+    const mockUser = { userId: 1 };
+    const createdStore = { id: 1, name: 'Sucursal 1', direction: 'Calle 123', managerId: 1 };
 
-    storeRepoMock.create.mockReturnValue(dto);
+    storeRepoMock.create.mockReturnValue({ ...dto, managerId: 1 });
     storeRepoMock.save.mockResolvedValue(createdStore);
 
-    const result = await service.create(dto);
+    const result = await service.create(dto, mockUser);
     expect(result).toEqual(createdStore);
-    expect(storeRepoMock.create).toHaveBeenCalledWith(dto);
-    expect(storeRepoMock.save).toHaveBeenCalledWith(dto);
+    expect(storeRepoMock.create).toHaveBeenCalledWith({ ...dto, managerId: 1 });
+    expect(storeRepoMock.save).toHaveBeenCalledWith({ ...dto, managerId: 1 });
   });
 
   it('should get all stores', async () => {

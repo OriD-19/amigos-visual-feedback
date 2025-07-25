@@ -33,7 +33,6 @@ export class UsersService {
     const existing = await this.findOneByEmail(dto.email);
     if (existing) throw new BadRequestException('Email already exists');
 
-    console.log("dto: (IF THIS DOES NOT WORK, IMMMA KMS)", dto);
 
     const user = this.usersRepository.create({
       ...dto,

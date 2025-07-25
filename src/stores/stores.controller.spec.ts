@@ -32,12 +32,14 @@ describe('StoresController', () => {
 
   describe('create', () => {
     it('should create a store', async () => {
-      const dto = { name: 'Store 1', direction: 'Address', managerId: 1 };
-      const expected = { id: 1, ...dto };
+      const dto = { name: 'Store 1', direction: 'Address' };
+      const mockUser = { userId: 1 };
+      const mockReq = { user: mockUser };
+      const expected = { id: 1, ...dto, managerId: 1 };
       mockStoresService.create.mockResolvedValue(expected);
 
-      const result = await controller.create(dto);
-      expect(service.create).toHaveBeenCalledWith(dto);
+      const result = await controller.create(mockReq, dto);
+      expect(service.create).toHaveBeenCalledWith(dto, mockUser);
       expect(result).toEqual(expected);
     });
   });

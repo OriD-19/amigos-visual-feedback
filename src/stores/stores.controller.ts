@@ -2,10 +2,10 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, Req } from
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwtAuth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('stores')
 @Controller('stores')
