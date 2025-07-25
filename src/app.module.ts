@@ -13,6 +13,7 @@ import { EtiquetaAutomática } from './etiqueta-automática/etiqueta-automática
 import { EtiquetaAutomáticaModule } from './etiqueta-automática/etiqueta-automática.module';
 import { ChatGptService } from './chatgpt/chatgpt.service';
 import { VisionModule } from './vision/vision.module';
+import { ReportModule } from './reports/report.module';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { VisionModule } from './vision/vision.module';
         ComentarioModule,
         EtiquetaAutomáticaModule,
         VisionModule,
+        ReportModule,
     ],
     controllers: [AppController],
     providers: [AppService, ChatGptService],

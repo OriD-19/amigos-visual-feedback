@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Image } from './image.entity';
 import { Comentario } from './comentario.entity';
 
@@ -20,4 +20,10 @@ export class Feedback {
   @ManyToOne(() => Comentario, { eager: true })
   @JoinColumn({ name: 'comentarioId' })
   comentario: Comentario;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 } 

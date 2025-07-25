@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { ProductStore } from "./product-store.entity";
 
 @Entity()
@@ -14,6 +14,12 @@ export class Product{
 
     @Column({ nullable: true })
     imageUrl: string;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 
     @OneToMany(() => ProductStore, (productStore) => productStore.product)
     productStores: ProductStore[];

@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Product } from "./products.entity";
 import { Store } from "src/stores/store.entity/store.entity";
 
@@ -19,6 +19,12 @@ export class ProductStore {
 
     @CreateDateColumn()
     added_date: Date;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 
     @ManyToOne(() => Product, (product) => product.productStores)
     @JoinColumn({name: 'product_id'})
