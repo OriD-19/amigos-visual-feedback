@@ -69,18 +69,22 @@ describe('ProductsService', () => {
   });
 
   it('should get all products', async () => {
+    productRepo.find.mockResolvedValue([mockProduct]);
     const result = await service.findAll();
     expect(result).toEqual([mockProduct]);
     expect(productRepo.find).toHaveBeenCalled();
   });
 
   it('should get a product by id', async () => {
+    productRepo.findOne.mockResolvedValue(mockProduct);
     const result = await service.findOne(1);
     expect(result).toEqual(mockProduct);
     expect(productRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['productStores', 'productStores.store'] });
   });
 
   it('should assign a product to a store', async () => {
+    productStoreRepo.create.mockReturnValue(mockProductStore);
+    productStoreRepo.save.mockResolvedValue(mockProductStore);
     const result = await service.assignToStore(1, { store_id: 1, stock: 10 });
     expect(productStoreRepo.create).toHaveBeenCalledWith({ product_id: 1, store_id: 1, stock: 10, added_date: expect.any(Date) });
     expect(productStoreRepo.save).toHaveBeenCalled();

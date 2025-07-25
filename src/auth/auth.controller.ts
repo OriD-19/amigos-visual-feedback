@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Request, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';

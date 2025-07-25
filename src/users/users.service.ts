@@ -11,9 +11,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { RegisterClientDto } from './dto/create-client.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserRoleDto } from './dto/update-role-user.dto';
-import { Store } from 'src/stores/store.entity/store.entity';
+import { Store } from '../stores/store.entity/store.entity';
 import * as bcrypt from 'bcrypt';
-import { RoleValidator } from 'src/auth/helpers/role-validator.helper';
+import { RoleValidator } from '../auth/helpers/role-validator.helper';
 
 
 @Injectable()
