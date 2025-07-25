@@ -1,0 +1,17 @@
+meta {
+  name: Create Product
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:3000/products
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  image: @file(C:\Users\USER\Pictures\kitten.png)
+  name: Kitten
+  price: 290
+}

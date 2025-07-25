@@ -12,6 +12,9 @@ export class Product{
     @Column()
     price: number;
 
+    @Column({ nullable: true })
+    imageUrl: string;
+
     @OneToMany(() => ProductStore, (productStore) => productStore.product)
     productStores: ProductStore[];
 }

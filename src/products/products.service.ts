@@ -5,6 +5,9 @@ import { Repository } from 'typeorm';
 import { ProductStore } from './products.entity/product-store.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { CreateProductStoreDto } from './dto/create-product-store.dto';
+import { Storage } from '@google-cloud/storage';
+import * as path from 'path';
+import "dotenv/config";
 
 @Injectable()
 export class ProductsService {
@@ -15,8 +18,28 @@ export class ProductsService {
         private productStoreRepository: Repository<ProductStore>
     ) { }
 
-    async create(createProductDto: CreateProductDto): Promise<Product> {
-        const product = this.productRepository.create(createProductDto);
+    async create(createProductDto: CreateProductDto, file?: Express.Multer.File): Promise<Product> {
+        let imageUrl: string | undefined = undefined;
+        if (file) {
+            const storage = new Storage({
+                keyFilename: process.env.GCP_CREDENTIALS_PATH || path.join(__dirname, '../../keys/gcp-credentials.json'),
+                projectId: process.env.GCP_PROJECT_ID,
+            });
+            const bucketName = process.env.GCP_BUCKET_NAME;
+            if (!bucketName) {
+                throw new Error('GCP_BUCKET_NAME environment variable is not set');
+            }
+            const bucket = storage.bucket(bucketName);
+            const blob = bucket.file(Date.now() + '-' + file.originalname);
+            const blobStream = blob.createWriteStream({ resumable: false });
+            await new Promise((resolve, reject) => {
+                blobStream.on('finish', resolve);
+                blobStream.on('error', reject);
+                blobStream.end(file.buffer);
+            });
+            imageUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+        }
+        const product = this.productRepository.create({ ...createProductDto, imageUrl });
         return await this.productRepository.save(product);
     }
 
