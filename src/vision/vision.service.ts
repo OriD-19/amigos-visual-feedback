@@ -31,6 +31,7 @@ export class VisionService {
         { type: 'OBJECT_LOCALIZATION' },
         { type: 'TEXT_DETECTION' },
         { type: 'IMAGE_PROPERTIES' },
+        { type: 'SAFE_SEARCH_DETECTION' },
       ],
     });
 
@@ -42,11 +43,14 @@ export class VisionService {
       SUPERMARKET_KEYWORDS.includes(label)
     );
 
+    const safeSearch = result.safeSearchAnnotation;
+
     if (matchedSupermarketKeywords.length === 0) {
       return {
         imageUrl,
         status: 'REJECTED',
         message: 'Este producto no pertenece al supermercado',
+        safeSearch,
       };
     }
 
@@ -55,6 +59,7 @@ export class VisionService {
       status: 'ACCEPTED',
       matchedSupermarketKeywords,
       annotations: result,
+      safeSearch,
     };
   }
 }

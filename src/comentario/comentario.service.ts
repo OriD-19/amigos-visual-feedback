@@ -73,6 +73,36 @@ export class ComentarioService {
     if (imageEntity) {
       const visionResult = await this.visionService.analyzeImageFromUrl(imageEntity.url);
       const labels = visionResult.matchedSupermarketKeywords || [];
+      const safeSearch = visionResult.safeSearch;
+      // Check for inappropriate content
+      const inappropriateLikelihoods = ['LIKELY', 'VERY_LIKELY'];
+      if (
+        safeSearch && (
+          inappropriateLikelihoods.includes(String(safeSearch.adult)) ||
+          inappropriateLikelihoods.includes(String(safeSearch.violence)) ||
+          inappropriateLikelihoods.includes(String(safeSearch.racy)) ||
+          inappropriateLikelihoods.includes(String(safeSearch.medical))
+        )
+      ) {
+        // Delete the image from GCS
+        const storage = new Storage({
+          keyFilename: process.env.GCP_CREDENTIALS_PATH || path.join(__dirname, '../../keys/gcp-credentials.json'),
+          projectId: process.env.GCP_PROJECT_ID,
+        });
+        const bucketName = process.env.GCP_BUCKET_NAME;
+        if (bucketName) {
+          const bucket = storage.bucket(bucketName);
+          const fileName = imageEntity.url.split('/').pop();
+          if (fileName) {
+            await bucket.file(fileName).delete().catch(() => {});
+          }
+        }
+        return {
+          status: 'REJECTED',
+          reason: 'La imagen contiene contenido inapropiado (adulto, violento, médico o subido de tono).',
+          safeSearch,
+        };
+      }
       // Store all labels as ImageLabel entries
       if (labels.length > 0) {
         const labelEntities = labels.map(label => this.comentarioRepository.manager.create(ImageLabel, { label, image: imageEntity }));
