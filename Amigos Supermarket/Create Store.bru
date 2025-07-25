@@ -1,0 +1,18 @@
+meta {
+  name: Create Store
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:3000/stores
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Sucursal Carlitos",
+    "direction": "Escuela Superior de Economia y Negocios"
+  }
+}

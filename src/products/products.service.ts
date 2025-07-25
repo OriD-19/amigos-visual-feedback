@@ -39,8 +39,21 @@ export class ProductsService {
             });
             imageUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
         }
-        const product = this.productRepository.create({ ...createProductDto, imageUrl });
-        return await this.productRepository.save(product);
+        // Extract storeId and remove from DTO for product creation
+        const { storeId, ...productData } = createProductDto;
+        const product = this.productRepository.create({ ...productData, imageUrl });
+        const savedProduct = await this.productRepository.save(product);
+        // Create ProductStore association
+        if (storeId) {
+            const productStore = this.productStoreRepository.create({
+                product_id: savedProduct.id,
+                store_id: storeId,
+                stock: createProductDto.stock,
+                added_date: new Date(),
+            });
+            await this.productStoreRepository.save(productStore);
+        }
+        return savedProduct;
     }
 
     async findAll(): Promise<Product[]> {

@@ -9,6 +9,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }
 
+    /**
+     * Create a new product and associate it with a store.
+     *
+     * Required fields in multipart/form-data:
+     * - name: string
+     * - price: number
+     * - storeId: number (store to associate the product with)
+     * - image: file (optional)
+     */
     @Post()
     @UseInterceptors(FileInterceptor('image'))
     create(
