@@ -1,4 +1,4 @@
-import { Comentario } from 'src/comentario/comentario.entity';
+import { Comentario } from '../comentario/comentario.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

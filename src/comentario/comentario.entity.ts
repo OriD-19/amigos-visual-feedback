@@ -1,6 +1,6 @@
-import { EtiquetaAutomática } from 'src/etiqueta-automática/etiqueta-automática.entity';
+import { EtiquetaAutomática } from '../etiqueta-automática/etiqueta-automática.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { ProductStore } from 'src/products/products.entity/product-store.entity';
+import { ProductStore } from '../products/products.entity/product-store.entity';
 
 @Entity()
 export class Comentario {

@@ -1,4 +1,4 @@
-import { ProductStore } from "src/products/products.entity/product-store.entity";
+import { ProductStore } from "../../products/products.entity/product-store.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()

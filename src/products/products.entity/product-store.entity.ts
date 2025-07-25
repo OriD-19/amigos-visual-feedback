@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Product } from "./products.entity";
-import { Store } from "src/stores/store.entity/store.entity";
+import { Store } from "../../stores/store.entity/store.entity";
 
 @Entity('product_store')
 export class ProductStore {

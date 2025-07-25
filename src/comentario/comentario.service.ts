@@ -2,16 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comentario } from './comentario.entity';
-import { ChatGptService } from 'src/chatgpt/chatgpt.service';
-import { EtiquetaAutomáticaService } from 'src/etiqueta-automática/etiqueta-automática.service';
+import { ChatGptService } from '../chatgpt/chatgpt.service';
+import { EtiquetaAutomáticaService } from '../etiqueta-automática/etiqueta-automática.service';
 import { Image } from './image.entity';
 import { Feedback } from './feedback.entity';
 import { Storage } from '@google-cloud/storage';
 import * as path from 'path';
 import { ImageLabel } from './image-label.entity';
-import { VisionService } from 'src/vision/vision.service';
-import { ProductsService } from 'src/products/products.service';
-import { Product } from 'src/products/products.entity/products.entity';
+import { VisionService } from '../vision/vision.service';
+import { ProductsService } from '../products/products.service';
+import { Product } from '../products/products.entity/products.entity';
 
 @Injectable()
 export class ComentarioService {
