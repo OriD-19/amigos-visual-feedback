@@ -1,10 +1,13 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ReportService } from './report.service';
 import * as PdfPrinter from 'pdfmake';
 import { Response } from 'express';
 import { Res } from '@nestjs/common';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwtAuth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 export class ReportQueryDto {
   @ApiPropertyOptional({ example: 1, description: 'Store ID to filter by' })
@@ -22,6 +25,8 @@ export class ReportQueryDto {
 
 @ApiTags('reports')
 @Controller('reports')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('admin', 'manager')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 

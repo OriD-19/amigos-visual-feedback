@@ -1,14 +1,17 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards, Req } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+
 @ApiTags('stores')
 @Controller('stores')
 @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 @ApiBearerAuth()
+@Roles('admin', 'manager')
 export class StoresController {
     constructor(private readonly storesService: StoresService) { }
 
@@ -20,8 +23,8 @@ export class StoresController {
     @ApiOperation({ summary: 'Create a new store' })
     @ApiBody({ type: CreateStoreDto })
     @ApiResponse({ status: 201, description: 'Store created successfully' })
-    create(@Body() createStoreDto: CreateStoreDto) {
-        return this.storesService.create(createStoreDto)
+    create(@Req() req, @Body() createStoreDto: CreateStoreDto) {
+        return this.storesService.create(createStoreDto, req.user)
     }
 
     @ApiOperation({ summary: 'Get all stores' })

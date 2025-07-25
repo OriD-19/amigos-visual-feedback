@@ -1,9 +1,18 @@
-import { Body, Controller, Post, Request, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post, Request, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { ApiProperty } from '@nestjs/swagger';
+
+class LoginDto {
+  @ApiProperty({ example: 'user@example.com', description: 'User email' })
+  email: string;
+
+  @ApiProperty({ example: 'password123', description: 'User password' })
+  password: string;
+}
 
 @ApiTags('auth')
 @Controller('auth')
@@ -12,21 +21,26 @@ export class AuthController {
         private readonly usersService: UsersService) { }
 
     @Post('register')
-    @ApiOperation({ summary: 'Client registration (public)' })
+    @ApiOperation({ summary: 'Client registration (public, only customers can self-register)' })
     @ApiResponse({ status: 201, description: 'Client registered successfully' })
     @ApiResponse({ status: 400, description: 'Error registering client' })
     async register(@Body() createUserDto: CreateUserDto) {
+        if (createUserDto.role && createUserDto.role !== 'cliente') {
+            throw new ForbiddenException('Only customer (cliente) role can be self-registered.');
+        }
+        // hash the password before saving to the database
         createUserDto.password = await bcrypt.hash(createUserDto.password, 12);
-        // Forzar rol cliente
         createUserDto.role = 'cliente';
+        console.log("createUserDto: (IF THIS DOES NOT WORK, IMMMA KMS)", createUserDto);
         return this.usersService.registerClient(createUserDto);
     }
 
     @Post('login')
     @ApiOperation({ summary: 'Login a user' })
+    @ApiBody({ type: LoginDto })
     @ApiResponse({ status: 200, description: 'User logged in successfully' })
     @ApiResponse({ status: 401, description: 'Unauthorized - Invalid email or password' })
-    async login(@Body() body: { email: string, password: string }) {
+    async login(@Body() body: LoginDto) {
         const { email, password } = body;
         const user = await this.authService.validateUser(email, password);
         if (!user) {

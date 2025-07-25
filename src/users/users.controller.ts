@@ -8,6 +8,7 @@ import {
   Body,
   UseGuards,
   Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,10 +31,14 @@ export class UsersController {
 
   // Public registration endpoint
   @Post()
-  @ApiOperation({ summary: 'Create a new user' })
+  @ApiOperation({ summary: 'Create a new user (only customers can self-register)' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({ status: 201, description: 'User created successfully' })
   async create(@Req() req, @Body() createUserDto: CreateUserDto) {
+    if (createUserDto.role && createUserDto.role !== 'cliente') {
+      throw new ForbiddenException('Only customer (cliente) role can be self-registered.');
+    }
+    createUserDto.role = 'cliente'; // enforce role
     createUserDto.password = await bcrypt.hash(createUserDto.password, 12);
     return this.usersService.create(req.user, createUserDto);
   }

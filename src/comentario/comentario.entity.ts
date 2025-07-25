@@ -31,10 +31,10 @@ export class Comentario {
   @ManyToOne(() => ProductStore, { eager: true })
   productStore: ProductStore;
 
-  @ManyToOne(() => User, { eager: true })
+  @ManyToOne(() => User, { eager: true, nullable: false })
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column()
+  @Column({ nullable: false })
   userId: number;
 }

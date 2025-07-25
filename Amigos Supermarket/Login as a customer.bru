@@ -1,0 +1,18 @@
+meta {
+  name: Login as a customer
+  type: http
+  seq: 10
+}
+
+post {
+  url: http://localhost:3000/auth/login
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "juan@juan.com",
+    "password": "contracontra"
+  }
+}

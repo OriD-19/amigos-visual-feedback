@@ -38,12 +38,14 @@ export class ComentarioController {
     }
   })
   @ApiResponse({ status: 201, description: 'Feedback created successfully' })
+  @UseInterceptors(FileInterceptor('image'))
   async createComentario(
     @Req() req,
-    @Body() body: CreateComentarioDto,
+    @Body('comentario') comentario: string,
+    @Body('productStoreId') productStoreId: number,
     @UploadedFile() file?: Express.Multer.File
   ) {
-    return this.comentarioService.createComentario(req.user, body.comentario, body.productStoreId, file);
+    return this.comentarioService.createComentario(req.user, comentario, Number(productStoreId), file);
   }
 
   @Get()

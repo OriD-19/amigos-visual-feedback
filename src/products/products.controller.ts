@@ -70,8 +70,8 @@ export class ProductsController {
         description: 'Insufficient permissions to perform this action'
     })
     @UseInterceptors(FileInterceptor('image'))
-    create(@Req() req, @Body() createProductDto: CreateProductDto) {
-        return this.productsService.create(createProductDto);
+    create(@Req() req, @Body() createProductDto: CreateProductDto, @UploadedFile() file?: Express.Multer.File) {
+        return this.productsService.create(createProductDto, file);
     }
 
     @Get()

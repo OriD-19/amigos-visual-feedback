@@ -7,5 +7,9 @@ meta {
 get {
   url: http://localhost:3000/reports/pdf
   body: none
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwic3ViIjozLCJ1c2VySWQiOjMsIm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzQ3NjQ3NCwiZXhwIjoxNzUzNDgwMDc0fQ.K8w6uZVRP-2zyxypFGOSpsZG9SXKtuMINR8nHyn5vno
 }

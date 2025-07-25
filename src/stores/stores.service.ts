@@ -14,9 +14,11 @@ export class StoresService {
         private productStoreRepository: Repository<ProductStore>,
     ) { }
 
-
-    async create(createStoreDto: CreateStoreDto): Promise<Store> {
-        const store = this.storeRepository.create(createStoreDto);
+    async create(createStoreDto: CreateStoreDto, user: any): Promise<Store> {
+        const store = this.storeRepository.create({
+            ...createStoreDto,
+            managerId: user.userId,
+        });
         return await this.storeRepository.save(store);
     }
 

@@ -7,12 +7,16 @@ meta {
 post {
   url: http://localhost:3000/stores
   body: json
-  auth: inherit
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwic3ViIjozLCJ1c2VySWQiOjMsIm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzQ3NjE1MCwiZXhwIjoxNzUzNDc5NzUwfQ.4bCPRqw3WPoyS9s07NBpCE32TDNZABjuj4ftwvV5xWs
 }
 
 body:json {
   {
-    "name": "Sucursal Juanit",
-    "direction": "Alameda Juan Pablo II"
+    "name": "Crustaceo Cascarudo",
+    "direction": "Fondo de Bikini"
   }
 }
