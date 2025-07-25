@@ -104,8 +104,9 @@ describe('ComentarioService', () => {
   });
 
   it('should get a comentario by id', async () => {
+    mockComentarioRepository.findOne.mockResolvedValueOnce(mockComentarioWithUser);
     const result = await service.getComentarioById(mockCustomerUser, 1);
-    expect(result).toEqual(mockComentario);
+    expect(result).toEqual(mockComentarioWithUser);
     expect(comentarioRepo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
   });
 
