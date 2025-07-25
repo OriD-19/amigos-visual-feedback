@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comentario } from './comentario.entity';
@@ -25,7 +25,10 @@ export class ComentarioService {
     private readonly visionService: VisionService,
     private readonly productsService: ProductsService,
   ) {}
-  async createComentario(comentario: string, productStoreId: number, file?: Express.Multer.File) {
+  async createComentario(user: any, comentario: string, productStoreId: number, file?: Express.Multer.File) {
+    if (!user || user.role !== 'cliente') {
+      throw new ForbiddenException('Only customers can submit feedback');
+    }
     let imageEntity: Image | undefined = undefined;
     if (file) {
       const storage = new Storage({
@@ -58,6 +61,8 @@ export class ComentarioService {
       sentimientoComentario: sentimiento,
       etiquetaAutomatica: { id: etiquetaBase.id },
       productStore: productStoreRef,
+      user: user,
+      userId: user.id,
     });
     const comentarioBase = await this.comentarioRepository.save(nuevoComentario);
 
@@ -113,25 +118,38 @@ export class ComentarioService {
 
     return feedback;
   }
-  async getComentarios(): Promise<Comentario[]> {
+  async getComentarios(user: any): Promise<Comentario[]> {
+    if (!user) throw new ForbiddenException('Not authenticated');
+    if (user.role === 'cliente') {
+      // Only see own feedback
+      return this.comentarioRepository.find({ where: { userId: user.id } });
+    }
+    // manager and auditor can see all
     return this.comentarioRepository.find();
   }
 
-  async getComentarioById(id: number): Promise<Comentario> {
-    const comentario = await this.comentarioRepository.findOne({
-      where: { id },
-    });
+  async getComentarioById(user: any, id: number): Promise<Comentario> {
+    const comentario = await this.comentarioRepository.findOne({ where: { id } });
     if (!comentario) {
       throw new NotFoundException('Comentario no encontrado');
     }
-
+    if (user.role === 'cliente' && comentario.userId !== user.id) {
+      throw new ForbiddenException('You can only view your own feedback');
+    }
+    // manager and auditor can view all
     return comentario;
   }
-  async deleteComentario(id: number): Promise<void> {
-    const resultado = await this.comentarioRepository.delete(id);
-
-    if (resultado.affected === 0) {
+  async deleteComentario(user: any, id: number): Promise<void> {
+    const comentario = await this.comentarioRepository.findOne({ where: { id } });
+    if (!comentario) {
       throw new NotFoundException('Comentario no encontrado para eliminar');
     }
+    if (user.role === 'cliente' && comentario.userId !== user.id) {
+      throw new ForbiddenException('You can only delete your own feedback');
+    }
+    if (user.role !== 'manager' && user.role !== 'cliente') {
+      throw new ForbiddenException('You do not have permission to delete feedback');
+    }
+    await this.comentarioRepository.delete(id);
   }
 }
