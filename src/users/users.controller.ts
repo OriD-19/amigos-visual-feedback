@@ -16,8 +16,8 @@ import { UpdateUserRoleDto } from './dto/update-role-user.dto';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import * as bcrypt from "bcrypt";
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
-import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { JwtAuthGuard } from '../auth/jwtAuth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 

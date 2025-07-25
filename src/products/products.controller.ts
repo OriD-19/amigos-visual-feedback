@@ -6,11 +6,11 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody, ApiParam, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwtAuth.guard';
-import { PermissionsGuard } from 'src/auth/guards/permissions.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Permissions } from 'src/auth/decorators/permissions.decorator';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwtAuth.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @ApiTags('Products')
 @Controller('products')
