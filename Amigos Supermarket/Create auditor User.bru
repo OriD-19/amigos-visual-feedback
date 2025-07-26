@@ -4,8 +4,24 @@ meta {
   seq: 12
 }
 
-get {
+post {
   url: http://localhost:3000/users/register/admin
-  body: none
-  auth: inherit
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwic3ViIjozLCJ1c2VySWQiOjMsIm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MzQ3OTg3OSwiZXhwIjoxNzUzNDgzNDc5fQ.dYFyJ9qluCnB6-nynrsgE_XkPzD_3-RVCEk25daCsHo
+}
+
+body:json {
+  {
+    "name": "Fernanda",
+    "lastName": "Doe",
+    "email": "fernanda@example.com",
+    "dui": 12345678,
+    "password": "password123",
+    "role": "manager",
+    "storeId": 2
+  }
 }

@@ -8,8 +8,8 @@ export class Feedback {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  imageId: number;
+  @Column({ nullable: true })
+  imageId: number | null;
 
   @Column()
   comentarioId: number;

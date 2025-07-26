@@ -26,10 +26,18 @@ export class Comentario {
   @ManyToOne(() => EtiquetaAutomática, (etiqueta) => etiqueta.comentarios, {
     eager: true,
   })
+  @JoinColumn({ name: 'etiquetaAutomaticaId' })
   etiquetaAutomatica: EtiquetaAutomática;
 
+  @Column({ nullable: false })
+  etiquetaAutomaticaId: number;
+
   @ManyToOne(() => ProductStore, { eager: true })
+  @JoinColumn({ name: 'productStoreId' })
   productStore: ProductStore;
+
+  @Column({ nullable: false })
+  productStoreId: number;
 
   @ManyToOne(() => User, { eager: true, nullable: false })
   @JoinColumn({ name: 'userId' })

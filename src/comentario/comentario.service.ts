@@ -60,7 +60,9 @@ export class ComentarioService {
       textoComentario: comentario,
       sentimientoComentario: sentimiento,
       etiquetaAutomatica: { id: etiquetaBase.id },
+      etiquetaAutomaticaId: etiquetaBase.id,
       productStore: productStoreRef,
+      productStoreId: productStoreId,
       user: { id: user.userId },
       userId: user.userId,
     });
@@ -68,7 +70,7 @@ export class ComentarioService {
 
     // Create Feedback entity linking image and comment
     const feedback = this.comentarioRepository.manager.create(Feedback, {
-      imageId: imageEntity ? imageEntity.id : undefined,
+      imageId: imageEntity ? imageEntity.id : null,
       comentarioId: comentarioBase.id,
     });
     await this.comentarioRepository.manager.save(Feedback, feedback);
@@ -116,7 +118,7 @@ export class ComentarioService {
       matchedProduct = await this.productsService.findProductByLabels(labels);
     }
 
-    return feedback;
+    return comentarioBase;
   }
   async getComentarios(user: any): Promise<Comentario[]> {
     if (!user) {

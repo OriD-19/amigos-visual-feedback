@@ -15,7 +15,11 @@ const mockComentario = {
   textoComentario: 'Great product',
   sentimientoComentario: 'Verde',
   etiquetaAutomatica: { id: 1 },
+  etiquetaAutomaticaId: 1,
   productStore: { id: 1 },
+  productStoreId: 1,
+  userId: 10,
+  user: { id: 10 },
 };
 
 const mockFeedback = {
@@ -36,7 +40,7 @@ const mockManager = {
 };
 
 const mockComentarioRepository = {
-  create: jest.fn().mockReturnValue(mockComentario),
+  create: jest.fn().mockImplementation((data) => ({ ...mockComentario, ...data })),
   save: jest.fn().mockResolvedValue(mockComentario),
   find: jest.fn().mockResolvedValue([mockComentario]),
   findOne: jest.fn().mockResolvedValue(mockComentario),
@@ -92,7 +96,7 @@ describe('ComentarioService', () => {
 
   it('should create a comentario', async () => {
     const result = await service.createComentario(mockCustomerUser, 'Great product', 1);
-    expect(result).toEqual(expect.objectContaining(mockFeedback));
+    expect(result).toEqual(expect.objectContaining(mockComentario));
     expect(comentarioRepo.create).toHaveBeenCalled();
     expect(comentarioRepo.save).toHaveBeenCalled();
   });
